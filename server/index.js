@@ -17,8 +17,25 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+//Run when client connects
 io.on("connection", (socket) => {
   console.log("a user connected");
+
+  //Welcome current user
+  socket.emit("message", "Welcome to the chat!");
+
+  //Brodcast when a user is connected
+  socket.broadcast.emit("message", "A user has joined the chat");
+
+  //Runs when a user left the chat
+  socket.on("disconnect", () => {
+    io.emit("message", "A user has left the chat");
+  });
+
+  //Listen for chatMessage
+  socket.on("chatMessage", (msg) => {
+    io.emit("message", msg);
+  });
 });
 
 server.listen(3000, () => {
